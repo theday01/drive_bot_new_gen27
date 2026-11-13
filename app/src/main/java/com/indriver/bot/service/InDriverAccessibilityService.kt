@@ -31,7 +31,10 @@ class InDriverAccessibilityService : AccessibilityService() {
         // Configurable list of exact accept button texts (exact match, case-insensitive, trimmed)
         val ACCEPT_BUTTON_TEXTS = listOf(
             "قبول",
+            "قبول الطلب",
+            "قبول العرض",
             "Accept",
+            "Accept order",
             "Принять",
             "Aceptar",
             "ACCEPT",
@@ -148,7 +151,7 @@ class InDriverAccessibilityService : AccessibilityService() {
                         return
                     }
                     FilterDecision.REJECT_PRICE_TOO_LOW -> {
-                        Log.d(TAG, "Order rejected by min price filter: price=${parsed.price} < min=${prefs.getMinPrice()}")
+                        Log.d(TAG, "Order rejected by min price filter: price=${parsed.price} MAD < min=${prefs.getMinPrice()} MAD")
                         prefs.incrementMissed()
                         lastActionTime = now
                         return
@@ -184,9 +187,9 @@ class InDriverAccessibilityService : AccessibilityService() {
                         prefs.addEarnings(price)
 
                         if (prefs.areNotificationsEnabled()) {
-                            showToast("✅ Accepted: $price")
+                            showToast("✅ تم قبول طلب: $price د.م. ($distance كم)")
                         }
-                        Log.d(TAG, "Order accepted successfully: price=$price, distance=$distance km")
+                        Log.d(TAG, "Order accepted successfully: price=$price MAD, distance=$distance km")
                     }
                 } finally {
                     isActionInFlight = false

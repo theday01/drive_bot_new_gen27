@@ -3,6 +3,8 @@ package com.indriver.bot.ui.main
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.SeekBar
 import android.widget.Toast
@@ -52,11 +54,11 @@ class MainActivity : AppCompatActivity() {
         if (enable) {
             BotService.start(this)
             updateStatusRunning()
-            Toast.makeText(this, "🟢 Bot Started!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "🟢 تم تشغيل البوت!", Toast.LENGTH_SHORT).show()
         } else {
             BotService.stop(this)
             updateStatusStopped()
-            Toast.makeText(this, "🔴 Bot Stopped", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "🔴 تم إيقاف البوت", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -116,7 +118,7 @@ class MainActivity : AppCompatActivity() {
             .setTitle(R.string.permission_accessibility)
             .setMessage(R.string.permission_accessibility_description)
             .setPositiveButton(R.string.grant_permissions) { _, _ -> requestAccessibilityPermission() }
-            .setNegativeButton(android.R.string.cancel, null)
+            .setNegativeButton("إلغاء", null)
             .show()
     }
 
@@ -124,7 +126,7 @@ class MainActivity : AppCompatActivity() {
         prefs.checkDateReset()
         binding.tvAccepted.text = prefs.getAcceptedCount().toString()
         binding.tvRejected.text = prefs.getMissedCount().toString()
-        binding.tvEarnings.text = "$${String.format("%.2f", prefs.getTotalEarnings())}"
+        binding.tvEarnings.text = "${String.format("%.2f", prefs.getTotalEarnings())} د.م."
     }
 
     private fun showSettingsDialog() {
@@ -133,83 +135,136 @@ class MainActivity : AppCompatActivity() {
         dialogBinding.switchAutoBid.isChecked = prefs.isAutoBidEnabled()
         dialogBinding.switchNotifications.isChecked = prefs.areNotificationsEnabled()
 
-        val minPrice = prefs.getMinPrice().toInt()
-        dialogBinding.seekMinPrice.progress = minPrice
-        dialogBinding.tvMinPriceValue.text = "$$minPrice"
+        val currentMinPrice = prefs.getMinPrice()
+        val currentMaxDistance = prefs.getMaxDistance()
 
-        val maxDistance = prefs.getMaxDistance().toInt()
-        dialogBinding.seekMaxDistance.progress = maxDistance
-        dialogBinding.tvMaxDistanceValue.text = "$maxDistance km"
+        dialogBinding.etMinPrice.setText(if (currentMinPrice > 0) currentMinPrice.toInt().toString() else "0")
+        dialogBinding.tvMinPriceValue.text = "${currentMinPrice.toInt()} د.م."
+        dialogBinding.seekMinPrice.progress = currentMinPrice.toInt().coerceIn(0, 200)
 
+        dialogBinding.etMaxDistance.setText(if (currentMaxDistance > 0) currentMaxDistance.toInt().toString() else "10")
+        dialogBinding.tvMaxDistanceValue.text = "${currentMaxDistance.toInt()} كم"
+        dialogBinding.seekMaxDistance.progress = currentMaxDistance.toInt().coerceIn(0, 50)
+
+        var isUpdatingPriceFromSeek = false
         dialogBinding.seekMinPrice.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                dialogBinding.tvMinPriceValue.text = "$$progress"
+                if (fromUser) {
+                    isUpdatingPriceFromSeek = true
+                    dialogBinding.etMinPrice.setText(progress.toString())
+                    dialogBinding.tvMinPriceValue.text = "$progress د.م."
+                    isUpdatingPriceFromSeek = false
+                }
             }
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
 
+        dialogBinding.etMinPrice.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (!isUpdatingPriceFromSeek) {
+                    val price = s?.toString()?.toIntOrNull() ?: 0
+                    dialogBinding.tvMinPriceValue.text = "$price د.م."
+                    if (price in 0..200) {
+                        dialogBinding.seekMinPrice.progress = price
+                    }
+                }
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        var isUpdatingDistanceFromSeek = false
         dialogBinding.seekMaxDistance.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                dialogBinding.tvMaxDistanceValue.text = "$progress km"
+                if (fromUser) {
+                    isUpdatingDistanceFromSeek = true
+                    dialogBinding.etMaxDistance.setText(progress.toString())
+                    dialogBinding.tvMaxDistanceValue.text = "$progress كم"
+                    isUpdatingDistanceFromSeek = false
+                }
             }
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+
+        dialogBinding.etMaxDistance.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (!isUpdatingDistanceFromSeek) {
+                    val dist = s?.toString()?.toIntOrNull() ?: 0
+                    dialogBinding.tvMaxDistanceValue.text = "$dist كم"
+                    if (dist in 0..50) {
+                        dialogBinding.seekMaxDistance.progress = dist
+                    }
+                }
+            }
+            override fun afterTextChanged(s: Editable?) {}
         })
 
         dialogBinding.btnManageSideIcon.setOnClickListener {
             MaterialAlertDialogBuilder(this)
-                .setTitle("📱 Hide Side Floating Icon")
+                .setTitle("📱 إخفاء الأيقونة الجانبية العائمة")
                 .setMessage(
-                    "The side floating icon is the Android Accessibility Shortcut.\n\n" +
-                    "To hide it:\n" +
-                    "1. Tap 'Open Settings' below\n" +
-                    "2. Select 'inDriver Bot'\n" +
-                    "3. Turn OFF 'inDriver Bot shortcut' (keep the main service ON)\n\n" +
-                    "The floating icon will disappear from your screen while the bot continues to work normally!"
+                    "هذه الأيقونة العائمة على جانب الشاشة هي اختصار إمكانية الوصول في أندرويد.\n\n" +
+                    "لإخفائها بسهولة:\n" +
+                    "1. اضغط على 'فتح الإعدادات' بالأسفل\n" +
+                    "2. اختر 'بوت إن درايف' (inDriver Bot)\n" +
+                    "3. أوقف خيار 'اختصار بوت إن درايف' (واترك الخدمة الأساسية مفعلة)\n\n" +
+                    "ستختفي الأيقونة العائمة فوراً وسيستمر البوت في العمل بشكل طبيعي!"
                 )
-                .setPositiveButton("Open Settings") { _, _ ->
+                .setPositiveButton("فتح الإعدادات") { _, _ ->
                     startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
                 }
-                .setNegativeButton(android.R.string.cancel, null)
+                .setNegativeButton("إلغاء", null)
                 .show()
         }
 
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.settings)
             .setView(dialogBinding.root)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
+            .setPositiveButton("حفظ") { _, _ ->
+                val minPrice = dialogBinding.etMinPrice.text?.toString()?.toDoubleOrNull()
+                    ?: dialogBinding.seekMinPrice.progress.toDouble()
+                val maxDist = dialogBinding.etMaxDistance.text?.toString()?.toDoubleOrNull()
+                    ?: dialogBinding.seekMaxDistance.progress.toDouble()
+
                 prefs.setAutoBidEnabled(dialogBinding.switchAutoBid.isChecked)
                 prefs.setNotificationsEnabled(dialogBinding.switchNotifications.isChecked)
-                prefs.setMinPrice(dialogBinding.seekMinPrice.progress.toDouble())
-                prefs.setMaxDistance(dialogBinding.seekMaxDistance.progress.toDouble())
-                Toast.makeText(this, "Settings saved", Toast.LENGTH_SHORT).show()
+                prefs.setMinPrice(minPrice)
+                prefs.setMaxDistance(maxDist)
+
+                Toast.makeText(
+                    this,
+                    "✅ تم حفظ الإعدادات: أدنى سعر $minPrice د.م.، أقصى مسافة $maxDist كم",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
-            .setNegativeButton(android.R.string.cancel, null)
+            .setNegativeButton("إلغاء", null)
             .show()
     }
 
     private fun showStatsDialog() {
         prefs.checkDateReset()
         val stats = """
-            📊 Statistics
+            📊 إحصائيات الأداء والأرباح
             
-            ✅ Total Accepted: ${prefs.getAcceptedCount()}
-            ❌ Total Missed: ${prefs.getMissedCount()}
-            💰 Total Earnings: $${String.format("%.2f", prefs.getTotalEarnings())}
-            📅 Today's Accepted: ${prefs.getTodayAccepted()}
-            💵 Today's Earnings: $${String.format("%.2f", prefs.getTodayEarnings())}
-            📈 Win Rate: ${String.format("%.1f", prefs.getWinRate())}%
+            ✅ الطلبات المقبولة: ${prefs.getAcceptedCount()}
+            ❌ الطلبات المتجاهلة: ${prefs.getMissedCount()}
+            💰 إجمالي الأرباح: ${String.format("%.2f", prefs.getTotalEarnings())} د.م.
+            📅 مقبولة اليوم: ${prefs.getTodayAccepted()}
+            💵 أرباح اليوم: ${String.format("%.2f", prefs.getTodayEarnings())} د.م.
+            📈 نسبة القبول: ${String.format("%.1f", prefs.getWinRate())}%
         """.trimIndent()
 
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.statistics)
             .setMessage(stats)
-            .setPositiveButton(android.R.string.ok, null)
-            .setNeutralButton("Reset") { _, _ ->
+            .setPositiveButton("حسناً", null)
+            .setNeutralButton("تصفير العداد") { _, _ ->
                 prefs.resetStats()
                 loadStats()
-                Toast.makeText(this, "Stats reset", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "تم تصفير الإحصائيات", Toast.LENGTH_SHORT).show()
             }
             .show()
     }

@@ -1,199 +1,247 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="24dp">
+    android:layout_height="wrap_content">
 
-    <!-- Auto-Bid Toggle -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingVertical="12dp">
+        android:orientation="vertical"
+        android:padding="24dp">
 
+        <!-- Auto-Bid Toggle -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="10dp">
 
-            <TextView
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="القبول التلقائي (Auto-Bid)"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="الموافقة وقبول الطلبات المطابقة للشروط تلقائياً"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"/>
+
+            </LinearLayout>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchAutoBid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Auto-Bid"
-                android:textColor="@color/text_primary"
-                android:textSize="16sp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Automatically place bids on orders"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"/>
+                android:checked="true"/>
 
         </LinearLayout>
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switchAutoBid"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"/>
-
-    </LinearLayout>
-
-    <!-- Notifications Toggle -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingVertical="12dp">
-
+        <!-- Notifications Toggle -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="10dp">
 
-            <TextView
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="إشعارات القبول"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="تنبيه عند قبول كل طلب جديد"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"/>
+
+            </LinearLayout>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchNotifications"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Notifications"
-                android:textColor="@color/text_primary"
-                android:textSize="16sp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Show notifications for accepted orders"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"/>
+                android:checked="true"/>
 
         </LinearLayout>
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switchNotifications"
+        <!-- Minimum Price Section (MAD / درهم مغربي) -->
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="true"/>
+            android:text="أقل سعر للطلب (درهم مغربي MAD)"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
 
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
 
-    <!-- Minimum Price -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Minimum Price"
-        android:textColor="@color/text_primary"
-        android:textSize="16sp"
-        android:layout_marginTop="16dp"/>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:boxBackgroundMode="outline"
+                app:boxStrokeColor="@color/green_500"
+                app:hintTextColor="@color/green_500">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="8dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etMinPrice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="أدخل المبلغ (مثلاً: 25)"
+                    android:inputType="numberDecimal"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/tvMinPriceValue"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="0 د.م."
+                android:textColor="@color/green_500"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+        </LinearLayout>
 
         <SeekBar
             android:id="@+id/seekMinPrice"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:max="50"
+            android:layout_marginTop="8dp"
+            android:max="200"
             android:progress="0"
             android:progressTint="@color/green_500"
             android:thumbTint="@color/green_500"/>
 
+        <!-- Maximum Distance Section (km / كيلومتر) -->
         <TextView
-            android:id="@+id/tvMinPriceValue"
-            android:layout_width="60dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="$0"
-            android:textColor="@color/green_500"
-            android:textSize="16sp"
+            android:text="أقصى مسافة للطلب (كيلومتر km)"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
             android:textStyle="bold"
-            android:gravity="center"/>
+            android:layout_marginTop="16dp"/>
 
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
 
-    <!-- Maximum Distance -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Maximum Distance"
-        android:textColor="@color/text_primary"
-        android:textSize="16sp"
-        android:layout_marginTop="16dp"/>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:boxBackgroundMode="outline"
+                app:boxStrokeColor="@color/blue_500"
+                app:hintTextColor="@color/blue_500">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="8dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etMaxDistance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="أدخل المسافة (مثلاً: 10)"
+                    android:inputType="numberDecimal"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/tvMaxDistanceValue"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="10 كم"
+                android:textColor="@color/blue_500"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+        </LinearLayout>
 
         <SeekBar
             android:id="@+id/seekMaxDistance"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_marginTop="8dp"
             android:max="50"
             android:progress="10"
             android:progressTint="@color/blue_500"
             android:thumbTint="@color/blue_500"/>
 
-        <TextView
-            android:id="@+id/tvMaxDistanceValue"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:text="10 km"
-            android:textColor="@color/blue_500"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:gravity="center"/>
-
-    </LinearLayout>
-
-    <!-- Side Floating Icon (Accessibility Shortcut) Section -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="20dp"
-        android:padding="12dp"
-        android:background="@color/bg_secondary">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="📱 Side Floating Icon"
-            android:textColor="@color/text_primary"
-            android:textSize="15sp"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="To hide or show the side floating shortcut button on your screen edge:"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp"
-            android:layout_marginTop="4dp"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnManageSideIcon"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+        <!-- Side Floating Icon (Accessibility Shortcut) Section -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="8dp"
-            android:text="Hide / Manage Side Icon"
-            android:textAllCaps="false"
-            android:textColor="@color/blue_500"
-            android:textSize="13sp"/>
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="20dp"
+            android:padding="12dp"
+            android:background="@color/bg_secondary">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📱 الأيقونة الجانبية العائمة"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="للإخفاء أو الإظهار: أوقف خيار 'اختصار بوت إن درايف' في إعدادات النظام"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnManageSideIcon"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:text="إخفاء / ضبط الأيقونة الجانبية"
+                android:textAllCaps="false"
+                android:textColor="@color/blue_500"
+                android:textSize="13sp"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+</ScrollView>

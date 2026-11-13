@@ -14,7 +14,7 @@
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="🚗 inDriver Bot"
+        android:text="🚗 بوت إن درايف"
         android:textColor="@color/text_primary"
         android:textSize="28sp"
         android:textStyle="bold"
@@ -27,7 +27,7 @@
         android:id="@+id/tvSubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Auto-Accept Orders"
+        android:text="القبول التلقائي للطلبات (المغرب)"
         android:textColor="@color/text_secondary"
         android:textSize="16sp"
         app:layout_constraintTop_toBottomOf="@id/tvTitle"
@@ -56,7 +56,7 @@
                 android:id="@+id/tvStatusTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Status"
+                android:text="الحالة"
                 android:textColor="@color/text_secondary"
                 android:textSize="14sp"/>
 
@@ -64,7 +64,7 @@
                 android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🔴 STOPPED"
+                android:text="🔴 متوقف"
                 android:textColor="@color/red_500"
                 android:textSize="20sp"
                 android:textStyle="bold"
@@ -106,13 +106,13 @@
                     android:layout_height="wrap_content"
                     android:text="0"
                     android:textColor="@color/green_500"
-                    android:textSize="24sp"
+                    android:textSize="22sp"
                     android:textStyle="bold"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Accepted"
+                    android:text="المقبولة"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp"/>
 
@@ -143,13 +143,13 @@
                     android:layout_height="wrap_content"
                     android:text="0"
                     android:textColor="@color/red_500"
-                    android:textSize="24sp"
+                    android:textSize="22sp"
                     android:textStyle="bold"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Missed"
+                    android:text="المتجاهلة"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp"/>
 
@@ -157,7 +157,7 @@
 
         </androidx.cardview.widget.CardView>
 
-        <!-- Earnings Card -->
+        <!-- Earnings Card (MAD) -->
         <androidx.cardview.widget.CardView
             android:layout_width="0dp"
             android:layout_height="80dp"
@@ -177,15 +177,15 @@
                     android:id="@+id/tvEarnings"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="$0"
+                    android:text="0 د.م."
                     android:textColor="@color/blue_500"
-                    android:textSize="24sp"
+                    android:textSize="18sp"
                     android:textStyle="bold"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Earnings"
+                    android:text="الأرباح (MAD)"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp"/>
 
@@ -201,7 +201,7 @@
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_marginTop="32dp"
-        android:text="  Auto-Accept"
+        android:text="  التشغيل التلقائي (Auto-Accept)"
         android:textAllCaps="false"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -218,7 +218,7 @@
         android:layout_height="56dp"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="8dp"
-        android:text="⚙ Settings"
+        android:text="⚙️ الإعدادات"
         android:textAllCaps="false"
         android:textColor="@color/text_secondary"
         android:textSize="16sp"
@@ -236,7 +236,7 @@
         android:layout_height="56dp"
         android:layout_marginTop="12dp"
         android:layout_marginStart="8dp"
-        android:text="📊 Stats"
+        android:text="📊 الإحصائيات"
         android:textAllCaps="false"
         android:textColor="@color/text_secondary"
         android:textSize="16sp"
@@ -267,7 +267,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="⚠️ Permissions Required"
+                android:text="⚠️ مطلوب صلاحية إمكانية الوصول"
                 android:textColor="@color/orange_500"
                 android:textSize="14sp"
                 android:textStyle="bold"/>
@@ -276,7 +276,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Enable Accessibility Service for inDriver to allow auto-accept"
+                android:text="يرجى تفعيل خدمة بوت inDriver في إعدادات الوصول لتمكينه من رصد وقبول الطلبات"
                 android:textColor="@color/text_secondary"
                 android:textSize="13sp"/>
 
@@ -286,7 +286,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_marginTop="8dp"
-                android:text="Grant Now"
+                android:text="تفعيل الآن"
                 android:textColor="@color/blue_500"
                 android:textSize="14sp"/>
 

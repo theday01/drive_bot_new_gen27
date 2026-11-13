@@ -114,15 +114,13 @@ object OrderParser {
 
     /**
      * Extracts price value from text containing currency symbols or codes.
-     * Supports:
-     * - Currency symbols: $, €, £, ¥, ₽, ₹
-     * - Currency codes/words: EGP, SAR, AED, USD, EUR, DZD, DA, LE, L.E, руб,
-     *   ج.م, ر.س, د.إ, د.ك, دج, جنيه, ريال, درهم, دينار
-     * - Formats: "50 ج.م", "50ج.م", "$45.50", "45,50 €", "١٢٫٥ ج.م", "1,500 EGP"
+     * Full support for Moroccan Dirham (MAD, DH, د.م, درهم) and other currencies.
      */
     fun parsePrice(text: String): Double? {
         if (text.isBlank()) return null
         val normalized = normalizeDigits(text.trim())
+
+        val currencyTokens = "MAD|DH|DHS|د\\.م\\.|د\\.م|درهم|درهما|درهماً|EGP|SAR|AED|USD|EUR|DZD|DA|LE|L\\.E|ج\\.م|ر\\.س|د\\.إ|د\\.ك|دج|جنيه|ريال|دينار|руб|\\$|€|£|¥|₽|₹"
 
         val currencyPattern = Regex(
             """(?x)
@@ -130,11 +128,11 @@ object OrderParser {
                 (?:^|[^\w\d])
                 (\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?|\d+(?:[.,]\d{1,2})?)
                 \s*
-                (?:\$|€|£|¥|₽|₹|EGP|SAR|AED|USD|EUR|DZD|DA|LE|L\.E|ج\.م|ر\.س|د\.إ|د\.ك|دج|جنيه|ريال|درهم|دينار|руб)
+                (?:$currencyTokens)
                 (?:$|[^\w\d])
             |
                 (?:^|[^\w\d])
-                (?:\$|€|£|¥|₽|₹|EGP|SAR|AED|USD|EUR|DZD|DA|LE|L\.E|ج\.م|ر\.س|د\.إ|د\.ك|دج|جنيه|ريال|درهم|دينار|руб)
+                (?:$currencyTokens)
                 \s*
                 (\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?|\d+(?:[.,]\d{1,2})?)
                 (?:$|[^\w\d])
@@ -169,9 +167,8 @@ object OrderParser {
                 trimmed.replace(',', '.')
             }
         } else {
-            trimmed
+            raw
         }
         return cleaned.toDoubleOrNull()
     }
 }
-

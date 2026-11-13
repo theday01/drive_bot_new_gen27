@@ -56,10 +56,10 @@ class BotService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "inDrive Bot Status",
+                "حالة بوت إن درايف",
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
-                description = "Foreground service notification reflecting bot running state"
+                description = "إشعار دائم يوضح حالة تشغيل البوت في الخلفية"
             }
             val manager = getSystemService(NotificationManager::class.java)
             manager?.createNotificationChannel(channel)
@@ -69,9 +69,9 @@ class BotService : Service() {
     private fun createNotification(): Notification {
         val isEnabled = PreferenceManager.isBotEnabled
         val contentText = if (isEnabled) {
-            "Bot is active (monitoring orders)"
+            "البوت نشط (يراقب ويقبل الطلبات تلقائياً)"
         } else {
-            "Bot is stopped"
+            "البوت متوقف"
         }
 
         val pendingIntent = PendingIntent.getActivity(
@@ -82,7 +82,7 @@ class BotService : Service() {
         )
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("inDrive Bot")
+            .setContentTitle("🚗 بوت إن درايف (inDrive)")
             .setContentText(contentText)
             .setSmallIcon(android.R.drawable.ic_menu_myplaces)
             .setContentIntent(pendingIntent)
