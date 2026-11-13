@@ -28,22 +28,11 @@ jobs:
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
-
-      - name: Build Release APK
+      - name: Build Application APK
         run: ./gradlew assembleRelease
 
-      - name: Upload Debug APK
+      - name: Upload inDrive Bot APK
         uses: actions/upload-artifact@v4
-        if: always()
         with:
-          name: app-debug
-          path: app/build/outputs/apk/debug/*.apk
-
-      - name: Upload Release APK
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: app-release
+          name: inDrive-Bot
           path: app/build/outputs/apk/release/*.apk
