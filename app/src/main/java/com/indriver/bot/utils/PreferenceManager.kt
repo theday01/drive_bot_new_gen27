@@ -46,6 +46,17 @@ class PreferenceManager(context: Context) {
     fun areNotificationsEnabled(): Boolean = sharedPreferences.getBoolean("notifications_enabled", true)
     fun setNotificationsEnabled(enabled: Boolean) = sharedPreferences.edit().putBoolean("notifications_enabled", enabled).apply()
 
+    // Human Simulation (Anti-Ban)
+    fun isHumanSimulationEnabled(): Boolean = sharedPreferences.getBoolean("human_simulation_enabled", true)
+    fun setHumanSimulationEnabled(enabled: Boolean) = sharedPreferences.edit().putBoolean("human_simulation_enabled", enabled).apply()
+
+    fun getHumanDelayMin(): Long = sharedPreferences.getLong("human_delay_min", 450L)
+    fun setHumanDelayMin(ms: Long) = sharedPreferences.edit().putLong("human_delay_min", ms).apply()
+
+    fun getHumanDelayMax(): Long = sharedPreferences.getLong("human_delay_max", 900L)
+    fun setHumanDelayMax(ms: Long) = sharedPreferences.edit().putLong("human_delay_max", ms).apply()
+
+    // Thresholds
     fun getMinPrice(): Double = sharedPreferences.getString("min_price", "0.0")?.toDoubleOrNull() ?: 0.0
     fun setMinPrice(price: Double) = sharedPreferences.edit().putString("min_price", price.toString()).apply()
 

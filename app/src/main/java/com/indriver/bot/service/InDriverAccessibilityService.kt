@@ -2,6 +2,12 @@ package com.indriver.bot.service
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
+import android.accessibilityservice.GestureDescription
+import android.graphics.Path
+import android.graphics.Rect
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
@@ -11,6 +17,7 @@ import com.indriver.bot.utils.FilterDecision
 import com.indriver.bot.utils.OrderFilter
 import com.indriver.bot.utils.OrderParser
 import com.indriver.bot.utils.PreferenceManager
+import kotlin.random.Random
 
 class InDriverAccessibilityService : AccessibilityService() {
 
@@ -48,6 +55,7 @@ class InDriverAccessibilityService : AccessibilityService() {
     }
 
     private lateinit var prefs: PreferenceManager
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     @Volatile
     private var isActionInFlight = false
@@ -68,6 +76,7 @@ class InDriverAccessibilityService : AccessibilityService() {
             flags = AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS or
                     AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
             notificationTimeout = 100
+            canPerformGestures = true
             packageNames = arrayOf(PACKAGE_INDRIVER)
         }
         serviceInfo = info
@@ -89,9 +98,7 @@ class InDriverAccessibilityService : AccessibilityService() {
 
         when (event.eventType) {
             AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
-            AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> {
-                processActiveWindow()
-            }
+            AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
             AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED -> {
                 processActiveWindow()
             }
@@ -104,12 +111,13 @@ class InDriverAccessibilityService : AccessibilityService() {
 
     override fun onDestroy() {
         super.onDestroy()
+        mainHandler.removeCallbacksAndMessages(null)
         instance = null
     }
 
     /**
      * Inspects the active window for an order screen containing an accept button,
-     * parses price and distance, checks filters, and clicks accept if conditions are met.
+     * parses price and distance, checks filters, and performs human-simulated accept.
      */
     private fun processActiveWindow() {
         val root = rootInActiveWindow ?: return
@@ -177,31 +185,94 @@ class InDriverAccessibilityService : AccessibilityService() {
                     return
                 }
 
-                try {
-                    isActionInFlight = true
-                    val success = clickableTarget.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-                    if (success) {
-                        lastActionTime = SystemClock.uptimeMillis()
-                        prefs.incrementAccepted()
-                        prefs.incrementTodayAccepted()
-                        prefs.addEarnings(price)
+                // Obtain button bounds before recycling nodes
+                val buttonBounds = Rect()
+                clickableTarget.getBoundsInScreen(buttonBounds)
 
-                        if (prefs.areNotificationsEnabled()) {
-                            showToast("✅ تم قبول طلب: $price د.م. ($distance كم)")
-                        }
-                        Log.d(TAG, "Order accepted successfully: price=$price MAD, distance=$distance km")
-                    }
-                } finally {
-                    isActionInFlight = false
-                    if (clickableTarget != acceptButton) {
-                        clickableTarget.recycle()
-                    }
+                // Human simulation logic: Anti-ban randomized reaction delay
+                val useHumanSimulation = prefs.isHumanSimulationEnabled()
+                val minDelay = prefs.getHumanDelayMin().coerceAtLeast(200L)
+                val maxDelay = prefs.getHumanDelayMax().coerceAtLeast(minDelay + 50L)
+                val delayMs = if (useHumanSimulation) Random.nextLong(minDelay, maxDelay) else 0L
+
+                isActionInFlight = true
+
+                if (delayMs > 0) {
+                    mainHandler.postDelayed({
+                        executeAcceptAction(buttonBounds, price, distance)
+                    }, delayMs)
+                } else {
+                    executeAcceptAction(buttonBounds, price, distance)
+                }
+
+                if (clickableTarget != acceptButton) {
+                    clickableTarget.recycle()
                 }
             } finally {
                 acceptButton.recycle()
             }
         } finally {
             root.recycle()
+        }
+    }
+
+    /**
+     * Executes the tap action with human simulation touch coordinates or fallback action.
+     */
+    private fun executeAcceptAction(bounds: Rect, price: Double, distance: Double) {
+        try {
+            if (!PreferenceManager.isBotEnabled) {
+                return
+            }
+
+            var clicked = false
+
+            // 1. Try realistic finger tap gesture if bounds are valid (Simulates genuine human screen touch)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !bounds.isEmpty) {
+                // Add natural human finger jitter offset from exact center
+                val offsetX = if (bounds.width() > 10) Random.nextInt(-bounds.width() / 4, bounds.width() / 4) else 0
+                val offsetY = if (bounds.height() > 10) Random.nextInt(-bounds.height() / 4, bounds.height() / 4) else 0
+                val tapX = (bounds.centerX() + offsetX).toFloat()
+                val tapY = (bounds.centerY() + offsetY).toFloat()
+
+                val path = Path().apply { moveTo(tapX, tapY) }
+                val touchDuration = Random.nextLong(65, 110) // Realistic human capacitive touch duration (ms)
+                val stroke = GestureDescription.StrokeDescription(path, 0, touchDuration)
+                val gesture = GestureDescription.Builder().addStroke(stroke).build()
+
+                clicked = dispatchGesture(gesture, null, null)
+            }
+
+            // 2. Fallback to accessibility action click if gesture dispatch wasn't supported
+            if (!clicked) {
+                val currentRoot = rootInActiveWindow
+                if (currentRoot != null) {
+                    val currentButton = findAcceptButton(currentRoot)
+                    if (currentButton != null) {
+                        val target = findClickableTarget(currentButton)
+                        if (target != null) {
+                            clicked = target.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                            if (target != currentButton) target.recycle()
+                        }
+                        currentButton.recycle()
+                    }
+                    currentRoot.recycle()
+                }
+            }
+
+            if (clicked) {
+                lastActionTime = SystemClock.uptimeMillis()
+                prefs.incrementAccepted()
+                prefs.incrementTodayAccepted()
+                prefs.addEarnings(price)
+
+                if (prefs.areNotificationsEnabled()) {
+                    showToast("✅ تم قبول طلب: $price د.م. ($distance كم)")
+                }
+                Log.d(TAG, "Order accepted successfully with human simulation: price=$price MAD, distance=$distance km")
+            }
+        } finally {
+            isActionInFlight = false
         }
     }
 
@@ -215,7 +286,6 @@ class InDriverAccessibilityService : AccessibilityService() {
             val nodes = root.findAccessibilityNodeInfosByViewId(viewId)
             if (!nodes.isNullOrEmpty()) {
                 val match = nodes[0]
-                // Recycle remaining nodes to avoid leaks
                 for (i in 1 until nodes.size) {
                     nodes[i].recycle()
                 }

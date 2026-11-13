@@ -132,6 +132,7 @@ class MainActivity : AppCompatActivity() {
     private fun showSettingsDialog() {
         val dialogBinding = DialogSettingsBinding.inflate(layoutInflater)
 
+        dialogBinding.switchHumanSimulation.isChecked = prefs.isHumanSimulationEnabled()
         dialogBinding.switchAutoBid.isChecked = prefs.isAutoBidEnabled()
         dialogBinding.switchNotifications.isChecked = prefs.areNotificationsEnabled()
 
@@ -229,6 +230,7 @@ class MainActivity : AppCompatActivity() {
                 val maxDist = dialogBinding.etMaxDistance.text?.toString()?.toDoubleOrNull()
                     ?: dialogBinding.seekMaxDistance.progress.toDouble()
 
+                prefs.setHumanSimulationEnabled(dialogBinding.switchHumanSimulation.isChecked)
                 prefs.setAutoBidEnabled(dialogBinding.switchAutoBid.isChecked)
                 prefs.setNotificationsEnabled(dialogBinding.switchNotifications.isChecked)
                 prefs.setMinPrice(minPrice)
