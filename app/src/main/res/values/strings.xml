@@ -31,6 +31,10 @@
     <string name="notifications_description">Show notifications for accepted orders</string>
     <string name="min_price">Minimum Price</string>
     <string name="max_distance">Maximum Distance</string>
+    <string name="side_shortcut">Floating Side Icon</string>
+    <string name="side_shortcut_description">Floating icon on the screen edge created by Android shortcut</string>
+    <string name="manage_shortcut">Hide / Manage Side Icon</string>
+    <string name="hide_shortcut_hint">Turn OFF "inDriver Bot shortcut" in system settings to hide the floating icon.</string>
     
     <!-- Permissions -->
     <string name="permission_accessibility">Accessibility Permission</string>

@@ -157,6 +157,24 @@ class MainActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
 
+        dialogBinding.btnManageSideIcon.setOnClickListener {
+            MaterialAlertDialogBuilder(this)
+                .setTitle("📱 Hide Side Floating Icon")
+                .setMessage(
+                    "The side floating icon is the Android Accessibility Shortcut.\n\n" +
+                    "To hide it:\n" +
+                    "1. Tap 'Open Settings' below\n" +
+                    "2. Select 'inDriver Bot'\n" +
+                    "3. Turn OFF 'inDriver Bot shortcut' (keep the main service ON)\n\n" +
+                    "The floating icon will disappear from your screen while the bot continues to work normally!"
+                )
+                .setPositiveButton("Open Settings") { _, _ ->
+                    startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                }
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
+        }
+
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.settings)
             .setView(dialogBinding.root)
