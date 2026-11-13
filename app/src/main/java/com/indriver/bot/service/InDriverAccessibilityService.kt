@@ -76,7 +76,6 @@ class InDriverAccessibilityService : AccessibilityService() {
             flags = AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS or
                     AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
             notificationTimeout = 100
-            canPerformGestures = true
             packageNames = arrayOf(PACKAGE_INDRIVER)
         }
         serviceInfo = info
